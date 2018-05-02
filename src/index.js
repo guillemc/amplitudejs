@@ -201,7 +201,9 @@ var Amplitude = (function () {
 		if( config.songs == undefined ){
 			config.songs = [];
 		}
-
+		for (var i = 0, n = config.songs.length; i < n; i++) {
+			if (song.url == config.songs[i].url) return i;
+		}
 		config.songs.push( song );
 		return config.songs.length - 1;
 	}
@@ -220,10 +222,33 @@ var Amplitude = (function () {
 	}
 
 	/*
-		TODO: Implement Add Song To Playlist Functionality
-	*/
-	function addSongToPlaylist( song, playlist ){
+		Adds a song to the playlist.  This will allow Amplitude
+		to play the song in a playlist type setting.
 
+		Public Accessor: Amplitude.addSongToPlaylist( song_json, playlist, initPlaylist)
+
+		@param song JSON representation of a song.
+
+		@param string playlist The playlist key.
+
+		@param boolean initPlaylist Empty and initialize the playlist
+		in case it already exists one with the same key. (default = false)
+
+		@returns int Index of the song.
+	*/
+	function addSongToPlaylist( song, playlist, initPlaylist ){
+		if (config.playlists == undefined) {
+			config.playlists = {};
+		}
+		if (initPlaylist || !(playlist in config.playlists)) {
+			config.playlists[playlist] = [];
+			config.shuffled_statuses[playlist] = false;
+			config.shuffled_playlists[playlist] = [];
+			config.shuffled_active_indexes[playlist] = 0;
+		}
+		var i = addSong(song);
+		config.playlists[playlist].push(i);
+		return i;
 	}
 
 	/*--------------------------------------------------------------------------
@@ -480,6 +505,7 @@ var Amplitude = (function () {
 		getSongByIndex: getSongByIndex,
 		getSongAtPlaylistIndex: getSongAtPlaylistIndex,
 		addSong: addSong,
+		addSongToPlaylist: addSongToPlaylist,
 		playNow: playNow,
 		play: play,
 		pause: pause,

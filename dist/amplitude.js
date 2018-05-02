@@ -4297,17 +4297,28 @@ exports.default = {
  --------------------------------------------------------------------------*/
 	playPause: function playPause() {
 		if (!_config2.default.is_touch_moving) {
+			var songIndex = this.getAttribute('amplitude-song-index');
+			var isMainPlayPause = this.getAttribute('amplitude-main-play-pause');
+			var isPlaylistMainPlayPause = this.getAttribute('amplitude-playlist-main-play-pause');
+
+			/*
+   	If it is for an individual song, check if the element is ready
+   	(has a non-empty amplitude-song-index attribute),
+   	as it might be set up later through javascript
+   */
+			if (!songIndex && songIndex !== '0' && !isMainPlayPause && !isPlaylistMainPlayPause) return;
+
 			/*
    	Checks to see if the element has an attribute for amplitude-main-play-pause
    	and syncs accordingly
    */
-			if (this.getAttribute('amplitude-main-play-pause') != null) {
+			if (isMainPlayPause != null) {
 				_helpers2.default.setMainPlayPause();
 
 				/*
     	Syncs playlist main play pause buttons
     */
-			} else if (this.getAttribute('amplitude-playlist-main-play-pause') != null) {
+			} else if (isPlaylistMainPlayPause) {
 				var playlist = this.getAttribute('amplitude-playlist');
 
 				_helpers2.default.setPlaylistPlayPause(playlist);
@@ -4317,7 +4328,6 @@ exports.default = {
     */
 			} else {
 				var playlist = this.getAttribute('amplitude-playlist');
-				var songIndex = this.getAttribute('amplitude-song-index');
 
 				_helpers2.default.setSongPlayPause(playlist, songIndex);
 			}
@@ -4969,7 +4979,9 @@ var Amplitude = function () {
 		if (_config2.default.songs == undefined) {
 			_config2.default.songs = [];
 		}
-
+		for (var i = 0, n = _config2.default.songs.length; i < n; i++) {
+			if (song.url == _config2.default.songs[i].url) return i;
+		}
 		_config2.default.songs.push(song);
 		return _config2.default.songs.length - 1;
 	}
@@ -4986,9 +4998,29 @@ var Amplitude = function () {
 	}
 
 	/*
- 	TODO: Implement Add Song To Playlist Functionality
+ 	Adds a song to the playlist.  This will allow Amplitude
+ 	to play the song in a playlist type setting.
+ 		Public Accessor: Amplitude.addSongToPlaylist( song_json, playlist, initPlaylist)
+ 		@param song JSON representation of a song.
+ 		@param string playlist The playlist key.
+ 		@param boolean initPlaylist Empty and initialize the playlist
+ 	in case it already exists one with the same key. (default = false)
+ 		@returns int Index of the song.
  */
-	function addSongToPlaylist(song, playlist) {}
+	function addSongToPlaylist(song, playlist, initPlaylist) {
+		if (_config2.default.playlists == undefined) {
+			_config2.default.playlists = {};
+		}
+		if (initPlaylist || !(playlist in _config2.default.playlists)) {
+			_config2.default.playlists[playlist] = [];
+			_config2.default.shuffled_statuses[playlist] = false;
+			_config2.default.shuffled_playlists[playlist] = [];
+			_config2.default.shuffled_active_indexes[playlist] = 0;
+		}
+		var i = addSong(song);
+		_config2.default.playlists[playlist].push(i);
+		return i;
+	}
 
 	/*--------------------------------------------------------------------------
  	Allows the user to play whatever the active song is directly
@@ -5231,6 +5263,7 @@ var Amplitude = function () {
 		getSongByIndex: getSongByIndex,
 		getSongAtPlaylistIndex: getSongAtPlaylistIndex,
 		addSong: addSong,
+		addSongToPlaylist: addSongToPlaylist,
 		playNow: playNow,
 		play: play,
 		pause: pause,

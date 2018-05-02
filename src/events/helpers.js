@@ -520,9 +520,9 @@ var AmplitudeEventHelpers = (function() {
 			/*
 				If the song has ended and repeat is on, play the song.
 			*/
-	    if( !( songEnded && !config.repeat && endOfList ) ){
-	    	AmplitudeCore.play();
-	    }
+			if( !( songEnded && !config.repeat && endOfList ) ){
+				AmplitudeCore.play();
+			}
 		}
 
 

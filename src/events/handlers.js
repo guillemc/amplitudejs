@@ -294,17 +294,28 @@ export default {
 	--------------------------------------------------------------------------*/
 	playPause: function(){
 		if( !config.is_touch_moving ){
+			var songIndex 	= this.getAttribute('amplitude-song-index');
+			var isMainPlayPause = this.getAttribute('amplitude-main-play-pause');
+			var isPlaylistMainPlayPause = this.getAttribute('amplitude-playlist-main-play-pause');
+
+			/*
+				If it is for an individual song, check if the element is ready
+				(has a non-empty amplitude-song-index attribute),
+				as it might be set up later through javascript
+			*/
+			if (!songIndex && songIndex !== '0' && !isMainPlayPause && !isPlaylistMainPlayPause) return;
+
 			/*
 				Checks to see if the element has an attribute for amplitude-main-play-pause
 				and syncs accordingly
 			*/
-			if( this.getAttribute( 'amplitude-main-play-pause' ) != null ){
+			if( isMainPlayPause != null ){
 				AmplitudeEventHelpers.setMainPlayPause();
 
 			/*
 				Syncs playlist main play pause buttons
 			*/
-			}else if( this.getAttribute('amplitude-playlist-main-play-pause') != null ){
+			}else if( isPlaylistMainPlayPause ){
 				var playlist 	= this.getAttribute('amplitude-playlist');
 
 				AmplitudeEventHelpers.setPlaylistPlayPause( playlist );
@@ -314,7 +325,6 @@ export default {
 			*/
 			}else{
 				var playlist 	= this.getAttribute('amplitude-playlist');
-				var songIndex 	= this.getAttribute('amplitude-song-index');
 
 				AmplitudeEventHelpers.setSongPlayPause( playlist, songIndex );
 			}
