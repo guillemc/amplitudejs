@@ -363,10 +363,17 @@ var AmplitudeVisualSyncHelpers = (function() {
 			var songPlayedProgressBars = document.querySelectorAll('.amplitude-song-played-progress[amplitude-main-song-played-progress="true"]');
 
 			for( var i = 0; i < songPlayedProgressBars.length; i++ ){
-				var max = songPlayedProgressBars[i].max;
-
-				songPlayedProgressBars[i].value = ( songPlayedPercentage / 100 ) * max;
+				updateProgressBar(songPlayedProgressBars[i], songPlayedPercentage);
 			}
+		}
+	}
+
+
+	function updateProgressBar(bar, songPlayedPercentage ){
+		if ( 'max' in bar ){
+			bar.value = ( songPlayedPercentage / 100 ) * bar.max;
+		} else if ( bar.getAttribute('data-set') == 'width' ){
+			bar.style.width = songPlayedPercentage+'%';
 		}
 	}
 
@@ -387,9 +394,7 @@ var AmplitudeVisualSyncHelpers = (function() {
 			var songPlayedProgressBars = document.querySelectorAll('.amplitude-song-played-progress[amplitude-playlist-song-played-progress="true"][amplitude-playlist="'+config.active_playlist+'"]');
 
 			for( var i = 0; i < songPlayedProgressBars.length; i++ ){
-				var max = songPlayedProgressBars[i].max;
-
-				songPlayedProgressBars[i].value = ( songPlayedPercentage / 100 ) * max;
+				updateProgressBar(songPlayedProgressBars[i], songPlayedPercentage);
 			}
 		}
 	}
@@ -416,9 +421,7 @@ var AmplitudeVisualSyncHelpers = (function() {
 				var songPlayedProgressBars = document.querySelectorAll('.amplitude-song-played-progress[amplitude-playlist="'+config.active_playlist+'"][amplitude-song-index="'+config.active_index+'"]');
 
 				for( var i = 0; i < songPlayedProgressBars.length; i++ ){
-					var max = songPlayedProgressBars[i].max;
-
-					songPlayedProgressBars[i].value = ( songPlayedPercentage / 100 ) * max;
+					updateProgressBar(songPlayedProgressBars[i], songPlayedPercentage);
 				}
 			}else{
 				/*
@@ -427,9 +430,7 @@ var AmplitudeVisualSyncHelpers = (function() {
 				var songPlayedProgressBars = document.querySelectorAll('.amplitude-song-played-progress[amplitude-song-index="'+config.active_index+'"]');
 
 				for( var i = 0; i < songPlayedProgressBars.length; i++ ){
-					var max = songPlayedProgressBars[i].max;
-
-					songPlayedProgressBars[i].value = ( songPlayedPercentage / 100 ) * max;
+					updateProgressBar(songPlayedProgressBars[i], songPlayedPercentage);
 				}
 			}
 		}
